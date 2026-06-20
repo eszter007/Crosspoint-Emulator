@@ -3,6 +3,9 @@
 // Sim stub for device hal/HalStorage.h. On device this is the storage HAL;
 // in the emulator we forward to SDCardManager so the same app code compiles.
 
+#include <cstdio>
+#include <cstring>
+
 #include "SDCardManager.h"
 #include "SdFat.h"
 #include "WString.h"
