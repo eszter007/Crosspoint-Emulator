@@ -40,13 +40,14 @@ class HalFile : public Print {
   int read() { return file_.read(); }
   size_t write(uint8_t b) override { return file_.write(b); }
   size_t write(const uint8_t* buf, size_t size) override { return file_.write(buf, size); }
+  size_t write(const void* buf, size_t size) { return file_.write(reinterpret_cast<const uint8_t*>(buf), size); }
   bool rename(const char* newPath) { return file_.rename(newPath); }
   bool isDirectory() const { return file_.isDirectory(); }
   void rewindDirectory() { file_.rewindDirectory(); }
   bool close() { file_.close(); return true; }
   HalFile openNextFile() { return HalFile(file_.openNextFile()); }
-  bool isOpen() const { return !file_.isDirectory() || file_.getName(nullptr, 0) > 0; }
-  operator bool() const { return true; }  // FsFile doesn't expose open state easily
+  bool isOpen() const { return static_cast<bool>(file_); }
+  operator bool() const { return static_cast<bool>(file_); }
 
  private:
   FsFile file_;
@@ -134,6 +135,5 @@ class HalStorage {
 };
 
 #define Storage HalStorage::getInstance()
-
 
 
