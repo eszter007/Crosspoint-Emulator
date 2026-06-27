@@ -53,6 +53,8 @@ set(SIM_SOURCES
   sim/src/image_decoder_stubs.cpp
   sim/src/jpeg_to_bmp_converter_stub.cpp
   sim/src/fork_compat_stubs.cpp
+  sim/src/json_settings_stub.cpp
+  sim/src/excluded_activity_stubs.cpp
 )
 
 file(GLOB_RECURSE CROSSPOINT_SRC "${CROSSPOINT_ROOT}/src/*.cpp")
@@ -60,6 +62,17 @@ list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/network/OtaUpdater\\.cpp$")
 list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/network/HttpDownloader\\.cpp$")
 list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/network/CrossPointWebServer\\.cpp$")
 list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/network/WebDAVHandler\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/JsonSettingsIO\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/EpubReaderTranslationActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/WifiSelectionActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/FontDownloadActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/ClockSyncActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/KOReaderSyncActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/KOReaderAuthActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/OtaUpdateActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/OpdsBookBrowserActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/CalibreConnectActivity\\.cpp$")
+list(FILTER CROSSPOINT_SRC EXCLUDE REGEX ".*/CrossPointWebServerActivity\\.cpp$")
 
 file(GLOB CROSSPOINT_LIB_CPP
   "${CROSSPOINT_ROOT}/lib/GfxRenderer/*.cpp"
@@ -91,6 +104,8 @@ file(GLOB CROSSPOINT_LIB_CPP
 list(FILTER CROSSPOINT_LIB_CPP EXCLUDE REGEX ".*/hal/.*")
 list(FILTER CROSSPOINT_LIB_CPP EXCLUDE REGEX ".*/JpegToFramebufferConverter\\.cpp$")
 list(FILTER CROSSPOINT_LIB_CPP EXCLUDE REGEX ".*/PngToFramebufferConverter\\.cpp$")
+list(FILTER CROSSPOINT_LIB_CPP EXCLUDE REGEX ".*/KOReaderJsonIO\\.cpp$")
+list(FILTER CROSSPOINT_LIB_CPP EXCLUDE REGEX ".*/KOReaderSyncClient\\.cpp$")
 
 set(ARDUINO_JSON_ROOT "${CROSSPOINT_ROOT}/.pio/libdeps/default/ArduinoJson")
 if(EXISTS "${ARDUINO_JSON_ROOT}/src/ArduinoJson.h")
