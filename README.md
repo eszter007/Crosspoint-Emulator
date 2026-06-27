@@ -2,7 +2,7 @@
 
 A fork of [jonmooreai/Crosspoint-Emulator](https://github.com/jonmooreai/Crosspoint-Emulator) adding Japanese language reading support — vertical text layout, dictionary lookup, verb deinflection, and page translation — on top of the upstream emulator's existing UX and library improvements.
 
-The emulator runs the [Crosspoint](https://github.com/crosspoint-reader/crosspoint-reader) e-reader firmware on your Mac or PC using an SDL2 window, directory-backed SD card, and keyboard input. This fork targets the `claude/vertical-japanese-text-pyosmu` branch of a Japanese-enabled Crosspoint firmware fork rather than mainline Crosspoint.
+The emulator runs the [Crosspoint](https://github.com/crosspoint-reader/crosspoint-reader) e-reader firmware on your Mac or PC using an SDL2 window, directory-backed SD card, and keyboard input. This fork targets the https://github.com/eszter007/Crosspoint-Emulator.git, a Japanese-enabled Crosspoint firmware fork rather than mainline Crosspoint.
 
 ---
 
