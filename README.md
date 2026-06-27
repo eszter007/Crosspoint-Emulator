@@ -8,62 +8,8 @@ The emulator runs the [Crosspoint](https://github.com/crosspoint-reader/crosspoi
 
 ## What this fork adds
 
-The upstream emulator ([jonmooreai/Crosspoint-Emulator](https://github.com/jonmooreai/Crosspoint-Emulator)) already provides a complete desktop emulator with a library grid, thumbnail prewarm, UX polish (button press feedback, centralized constants), and detailed build documentation. This fork does not change any of that. What it adds:
-
-### Vertical Japanese text (tategaki)
-
-Full vertical layout engine for Japanese EPUBs, implemented as new files only (`Kinsoku.h/.cpp`, `VerticalParsedText.h/.cpp`, `VerticalTextBlock.h/.cpp`) with no modifications to existing Crosspoint code:
-
-- Column-fill layout with kinsoku shori (oikomi/oidashi) — line-edge punctuation constraints
-- Correct placement of brackets, dashes, ellipsis, and small kana in vertical runs
-- Embedded horizontal runs (English words, numbers) handled with correct internal spacing
-- Font-adaptive spacing for UDDigiKyokasho, Noto Serif JP, and Noto Sans JP
-- Images render on their own page at full size; landscape images auto-rotate
-
-### Furigana (ruby text)
-
-Reading aids rendered beside kanji in vertical mode and above kanji in horizontal mode, with anti-overlap logic for dense furigana.
-
-### Dictionary lookup
-
-Button-driven word lookup requiring no touchscreen:
-
-- Pre-scans the current page to find dictionary-matchable word positions
-- Character-granular cursor stepping in reading order (modeled on the existing footnote-anchor navigation pattern)
-- Longest-match word detection on Confirm
-- Skips particles, digits, and punctuation automatically
-- Handles compound words (間取り図) and bound suffixes (設計士)
-- Scrollable definitions: Left/Right scrolls within an entry, Up/Down moves between entries
-- Backed by a binary-searchable fixed-record JMdict index on the SD card — no RAM load
-
-### Verb deinflection
-
-Local deinflection engine (rules implemented independently, not vendored from Yomitan) that recovers base forms from conjugated Japanese before dictionary lookup:
-
-- Covers passive, causative, te-form, masu-stem, and compound auxiliaries
-- Example: 読まれた→読む, 食べさせられて→食べる, 出された→出す
-
-### Name dictionary
-
-JMnedict support: Japanese names are recognised and grouped with honorifics (根岸さん, 和樹くん shown as one unit, not split across a word boundary).
-
-### Grammar dictionary
-
-Integrated grammar reference (Dictionary of Japanese Grammar format) surfaced alongside vocabulary definitions.
-
-### Page translation
-
-Translate the current page from Japanese to English via the Gemini 2.5 Flash API:
-
-- Scrollable translation overlay (Up/Down to scroll, Back to dismiss)
-- Desktop build uses libcurl; device build uses ESP32 WiFi + HTTP client
-- Requires a Gemini API key in `sdcard/gemini.key`
-
----
-
-## What this fork does not change
-
-Everything in the upstream emulator is preserved unchanged: the UX constants system, library grid, thumbnail prewarm, framebuffer rendering optimisations, button press feedback, the HAL abstraction layer, build system, and all documentation for general emulator use. Refer to [jonmooreai/Crosspoint-Emulator](https://github.com/jonmooreai/Crosspoint-Emulator) for that material.
+The upstream emulator ([jonmooreai/Crosspoint-Emulator](https://github.com/jonmooreai/Crosspoint-Emulator)) already provides a complete desktop emulator with a library grid, thumbnail prewarm, UX polish (button press feedback, centralized constants), and detailed build documentation. This fork does not change any of that. It improves support for rendering the Japanese language learning fork:
+https://github.com/eszter007/Crosspoint-Emulator.git
 
 ---
 
