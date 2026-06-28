@@ -27,7 +27,7 @@
 
 namespace {
 
-constexpr const char* API_KEY_PATH = "/gemini.key";
+constexpr const char* API_KEY_PATH = "/system/gemini.key";
 constexpr const char* GEMINI_MODEL = "gemini-2.5-flash";
 
 // Single-instance helper state (only one translation activity exists at a time).
