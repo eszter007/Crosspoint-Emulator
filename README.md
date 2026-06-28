@@ -116,8 +116,8 @@ Place `.cpfont` files in `sdcard/.fonts/`. The emulator runs with built-in fonts
 1. Open a Japanese EPUB
 2. Press **Enter** to open the reader menu
 3. Select **Word Lookup**
-4. **Up/Down** — move between matched words on the page
-5. **Left/Right** — scroll within a long definition entry
+4. **Left/Right** — move between matched words on the page
+5. **Up/Downt** — scroll within a long definition entry
 6. **Back** — return to reading
 
 ### Page translation
