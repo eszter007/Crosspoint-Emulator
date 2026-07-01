@@ -112,7 +112,12 @@ bool sim_display_init(void) {
   g_window = SDL_CreateWindow("Crosspoint Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH,
                               WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
   if (!g_window) return false;
-  g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
+  // PRESENTVSYNC: without it, SDL_RenderPresent() can swap mid-scanout,
+  // showing a torn frame -- a slice of the previous content at the top of
+  // the window while the rest already shows the new frame. Purely a
+  // display-presentation artifact of the emulator (real e-ink hardware
+  // transfers the buffer atomically over SPI and can't tear this way).
+  g_renderer = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (!g_renderer) return false;
   g_texture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, WINDOW_WIDTH,
                                 WINDOW_HEIGHT);
