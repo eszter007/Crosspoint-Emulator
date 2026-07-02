@@ -57,10 +57,17 @@ bool decode(const std::string& path, GfxRenderer& renderer, const RenderConfig& 
     return false;
   }
 
-  // Output dimensions: exact if requested, otherwise fit within max box.
+  // Output dimensions: exact if requested, aspect-fill (cover, may upscale)
+  // if config.fillCrop, otherwise aspect-fit within the max box.
   int outW = config.maxWidth;
   int outH = config.maxHeight;
-  if (!config.useExactDimensions && srcW > 0 && srcH > 0) {
+  if (config.fillCrop && srcW > 0 && srcH > 0) {
+    const float scaleW = static_cast<float>(config.maxWidth) / srcW;
+    const float scaleH = static_cast<float>(config.maxHeight) / srcH;
+    const float scale = std::max(scaleW, scaleH);
+    outW = std::max(1, static_cast<int>(srcW * scale));
+    outH = std::max(1, static_cast<int>(srcH * scale));
+  } else if (!config.useExactDimensions && srcW > 0 && srcH > 0) {
     const float scaleW = static_cast<float>(config.maxWidth) / srcW;
     const float scaleH = static_cast<float>(config.maxHeight) / srcH;
     const float scale = std::min({scaleW, scaleH, 1.0f});
@@ -70,22 +77,30 @@ bool decode(const std::string& path, GfxRenderer& renderer, const RenderConfig& 
   if (outW < 1) outW = 1;
   if (outH < 1) outH = 1;
 
+  // Crop bound: iterate/allocate only up to this size (top-left anchored --
+  // the fill-scaled image may be larger than the box on one axis).
+  const int renderW = (config.cropWidth > 0 && config.cropWidth < outW) ? config.cropWidth : outW;
+  const int renderH = (config.cropHeight > 0 && config.cropHeight < outH) ? config.cropHeight : outH;
+
   // Downscale (area average) to grayscale, then Atkinson-dither to 2-bit.
-  const int bytesPerRow = (outW + 3) / 4;  // 2bpp, 4px/byte
-  std::vector<uint8_t> packed(static_cast<size_t>(bytesPerRow) * outH, 0);
+  // Only the (possibly cropped) renderW x renderH region is ever produced --
+  // scaleX_fp/scaleY_fp still map against the true, uncropped outW/outH so
+  // sampling stays correct for a fillCrop image larger than the crop box.
+  const int bytesPerRow = (renderW + 3) / 4;  // 2bpp, 4px/byte
+  std::vector<uint8_t> packed(static_cast<size_t>(bytesPerRow) * renderH, 0);
 
   const uint32_t scaleX_fp = (static_cast<uint32_t>(srcW) << 16) / outW;
   const uint32_t scaleY_fp = (static_cast<uint32_t>(srcH) << 16) / outH;
 
-  AtkinsonDitherer ditherer(outW);
-  for (int y = 0; y < outH; y++) {
+  AtkinsonDitherer ditherer(renderW);
+  for (int y = 0; y < renderH; y++) {
     const int srcYStart = (static_cast<uint32_t>(y) * scaleY_fp) >> 16;
     const int srcYEnd =
         std::min(static_cast<int>((static_cast<uint32_t>(y + 1) * scaleY_fp) >> 16), srcH);
     const int srcYCount = std::max(1, srcYEnd - srcYStart);
     uint8_t* row = packed.data() + static_cast<size_t>(y) * bytesPerRow;
 
-    for (int x = 0; x < outW; x++) {
+    for (int x = 0; x < renderW; x++) {
       const int srcXStart = (static_cast<uint32_t>(x) * scaleX_fp) >> 16;
       const int srcXEnd =
           std::min(static_cast<int>((static_cast<uint32_t>(x + 1) * scaleX_fp) >> 16), srcW);
@@ -108,8 +123,8 @@ bool decode(const std::string& path, GfxRenderer& renderer, const RenderConfig& 
   if (!config.cachePath.empty()) {
     HalFile cf;
     if (Storage.openFileForWrite("IMG", config.cachePath, cf)) {
-      const uint16_t w16 = static_cast<uint16_t>(outW);
-      const uint16_t h16 = static_cast<uint16_t>(outH);
+      const uint16_t w16 = static_cast<uint16_t>(renderW);
+      const uint16_t h16 = static_cast<uint16_t>(renderH);
       cf.write(&w16, 2);
       cf.write(&h16, 2);
       cf.write(packed.data(), packed.size());
@@ -129,13 +144,13 @@ bool decode(const std::string& path, GfxRenderer& renderer, const RenderConfig& 
   const int screenH = renderer.getScreenHeight();
   DirectPixelWriter pw;
   pw.init(renderer);
-  for (int row = 0; row < outH; row++) {
+  for (int row = 0; row < renderH; row++) {
     const int destY = config.y + row;
     if (destY < 0 || destY >= screenH) continue;
     const uint8_t* rowBuf = packed.data() + static_cast<size_t>(row) * bytesPerRow;
     pw.beginRow(destY);
     int colStart, colEnd;
-    pw.bandColRange(config.x, outW, colStart, colEnd);
+    pw.bandColRange(config.x, renderW, colStart, colEnd);
     for (int col = colStart; col < colEnd; col++) {
       const int destX = config.x + col;
       if (destX < 0 || destX >= screenW) continue;
